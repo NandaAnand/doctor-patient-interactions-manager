@@ -1,0 +1,14 @@
+id,insurance_no,ailment,symptoms,metrics,remarks,health_status,qa,next_steps,label
+1,111,,"Elevated body temperature, often above 38°C","{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",visited other specialists,2,"{""since"": ""4 weeks""}","{""next_visit"": 12-10-2024,""prescribed_meds"": [""ABC 20mg"",  ""DEF 4mg""], ""prescribed_tests"": [""MNO-A"", ""EMC-12""] }",fever
+2,111,,Persistent dry or productive (with mucus) cough,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",,4,,"{""next_visit"": 22-10-2024,""prescribed_meds"": [""ABC 20mg"",  ""DEF 4mg""], ""prescribed_tests"": [""MNO-A"", ""EMC-12""] }","fever, skin"
+3,111,,dry skin,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",,5,,"{""next_visit"": 12-11-2024,""prescribed_meds"": [""PQA 10mg"",  ""DEF 4mg"", ""prescribed_tests"": [""MNO-A"", ""EMC-12""] , ""prescribed_specialist"": ""skin""}",fever
+4,111,,,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""90/80""}",,6,,,skin
+5,111,,stomach cramps,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",,3,,,fever
+6,111,,,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",,6,,,fever
+7,222,,rash,"{""temp"": 34, ""ECG"": STEMI, ""BP"": ""120/80""}",,8,,,skin
+8,222,,"itching, irritation",,,4,,,gut
+9,222,,uneasiness,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""130/80""}",,3,,,"gut, skin"
+10,222,,migrane,"{""temp"": 37.8, ""ECG"": Normal, ""BP"": ""120/80""}",,6,,,"gut, fever"
+11,222,,,"{""temp"": 38, ""ECG"": Normal, ""BP"": ""120/80""}",,9,,,fever
+12,222,,,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",,2,,,"cold, fever"
+13,222,,,"{""temp"": 37, ""ECG"": Normal, ""BP"": ""120/80""}",,6,,,

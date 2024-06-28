@@ -1,0 +1,3 @@
+insurance_no,fname,lname,addr,age,sex,ph_no,email,related_docs,habits,pre_existing_conditions,pre_existing_meds,blood_type,insurance_provider
+111,Vernon,Lopez,Berliner Straße 123,30,M,"0171 234567",vernon@yahoo.co.in,,"smoking, drinking",Asthma,GTH 30mg,B+,ABC
+222,Beth,Martin,Bahnhofstraße 999,45,F,"0131 123456",,,smoking,"Hypertension, Obesity",,AB+,DEF
