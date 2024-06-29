@@ -3,9 +3,7 @@ import numpy as np
 import json
 import sys
 
-sys.path.append("..")
 from injectors import sql_instance
-from sql_query_builder import SQLQueryBuilder
 from table_schemas import PatientSchema, InteractionSchema
 from datamodel.models import Interaction, Patient
 from data_utils import DataUtils
@@ -40,10 +38,14 @@ def main():
     if not connection:
         return
     data_utils = DataUtils(connection)
-    # data_utils.insert_interactions(interactions=interaction_objs)
-    # data_utils.create_table(PatientSchema)
-    # data_utils.insert_patients(patients=patient_objs)
-    data_utils.create_table(InteractionSchema)
+    data_utils.create_table(schema=PatientSchema)
+    data_utils.insert_patients(patients=patient_objs)
+    data_utils.create_table(schema=InteractionSchema)
+    data_utils.insert_interactions(interactions=interaction_objs)
+    patients = data_utils.get_patient_by_insurance_no(111)
+    print(patients[0].model_dump())
+    interactions = data_utils.get_interaction_info(222)
+    print(interactions[0].model_dump())
 
 
 if __name__ == "__main__":

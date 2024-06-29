@@ -2,6 +2,8 @@ from typing import List, Union, Any, Tuple
 
 from pydantic import BaseModel
 
+import json
+
 from sql_query_builder import SQLQueryBuilder, SQLOperators
 from datamodel.models import Interaction, Patient
 from injectors import sql_instance
@@ -10,7 +12,16 @@ from table_schemas import TableSchema, InteractionSchema, PatientSchema
 
 def convert_obj_to_lists(objs: List[BaseModel]) -> Union[List, List[List]]:
     cols = list(objs[0].model_dump().keys())
-    rows = [list(obj.model_dump().values()) for obj in objs]
+    rows = []
+    # @TODO make it more clean and readable
+    for obj in objs:
+        row = []
+        for col in cols:
+            value = obj.model_dump()[col]
+            if isinstance(value, (dict, BaseModel)):
+                value = json.dumps(value)
+            row.append(value)
+        rows.append(row)
     return cols, rows
 
 
@@ -19,30 +30,48 @@ class DataUtils:
         self.sql_builder = SQLQueryBuilder()
         self.conn = connection_obj
 
-    # def get_interactions(self, patient_id: str) -> List[Interaction]:
-    #     self.cursor = self.conn.cursor()
-    #     query = (
-    #         self.sql_builder.select(columns=["*"], table="Interactions")
-    #         .conditions(conditions=["Patient_id", SQLOperators.EQ, patient_id])
-    #         .limit(limit=10)
-    #         .order_by(col="Date", type=SQLOperators.DESC)
-    #         .group_by(cols=["label"])
-    #         .construct_query()
-    #     )
+    def get_patient_by_insurance_no(self, insurance_no: str) -> List[Patient]:
+        colnames_vs_objs = {col.name: col for col in PatientSchema.columns}
+        self.cursor = self.conn.cursor()
+        query = (
+            self.sql_builder.select(columns=["*"], table=PatientSchema.name)
+            .conditions(
+                conditions=[
+                    (colnames_vs_objs["insurance_no"], SQLOperators.EQ, insurance_no)
+                ]
+            )
+            .construct_query()
+        )
+        print(query)
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+        patients = [Patient.from_list(row) for row in rows]
+        self.cursor.close()
+        return patients
 
-    #     data = self.cursor.execute()
-    #     # parse
-    #     # data =
-    #     self.cursor.close()
-    #     return data
-
-    # def get_patient():
-    #     pass
+    def get_interaction_info(
+        self, insurance_no: int = None, labels: str = None
+    ) -> List[Interaction]:
+        colnames_vs_objs = {col.name: col for col in InteractionSchema.columns}
+        conditions = [(colnames_vs_objs["insurance_no"], SQLOperators.EQ, insurance_no)]
+        if labels:
+            for label in labels.split(","):
+                conditions += [(colnames_vs_objs["label"], SQLOperators.IN, label)]
+        self.cursor = self.conn.cursor()
+        query = (
+            self.sql_builder.select(columns=["*"], table=InteractionSchema.name)
+            .conditions(conditions=conditions)
+            .construct_query()
+        )
+        print(query)
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+        interactions = [Interaction.from_list(row) for row in rows]
+        self.cursor.close()
+        return interactions
 
     def create_table(self, schema: TableSchema):
-        query = self.sql_builder.create(
-            schema.name, col_vs_dtypes=schema.col_vs_dtypes
-        ).construct_query()
+        query = self.sql_builder.create(schema).construct_query()
         cursor = self.conn.cursor()
         print(query)
         cursor.execute(query)

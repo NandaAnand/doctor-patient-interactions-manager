@@ -1,4 +1,4 @@
-from typing import List, Any, Tuple, Literal, Dict, Union
+from typing import List, Any, Tuple
 from enum import Enum
 
 
@@ -22,6 +22,8 @@ class SQLTypes(Enum):
 
 
 class SQLQueryBuilder:
+    from table_schemas import TableSchema
+
     def __init__(self):
         self.query = ""
 
@@ -30,11 +32,19 @@ class SQLQueryBuilder:
         columns: List[str],
         table: str,
     ) -> Any:
+        self.table = table
         self.query = f"SELECT {','.join(columns)} FROM {table}"
         return self
 
     def conditions(self, conditions: List[Tuple]) -> Any:
-        self.query += f" WHERE {' AND '.join([f'{col1} {op.value} {col2}' for col1, op, col2 in conditions])}"  # Need to iterate over conditions, (col, gte, val), (col, eq, val),
+        # iterate over conditions, (col, gte, val), (col, eq, val)
+        conditions_queries = []
+        for col, op, val in conditions:
+            if col.dtype == SQLTypes.INT:
+                conditions_queries.append(f"{self.table}.{col.name} {op.value} {val}")
+            else:
+                conditions_queries.append(f"{self.table}.{col.name} {op.value} '{val}'")
+        self.query += f" WHERE {' AND '.join(conditions_queries)}"
         return self
 
     def order_by(self, col: str, type: SQLOperators) -> Any:
@@ -53,14 +63,10 @@ class SQLQueryBuilder:
         self.query += f" GROUP BY {','.join(cols)}"
         return self
 
-    def create(self, table: str, col_vs_dtypes: List[Tuple[str, Any]]):
-        def _format_column_definition(col_dtype: Tuple[str, Any]):
-            name, datatype = col_dtype
-            if datatype:
-                return f"{name} {datatype.value}"
-            return name
-
-        self.query = f"""CREATE TABLE IF NOT EXISTS {table} ({','.join([_format_column_definition(col_dtype) for col_dtype in col_vs_dtypes])})"""
+    def create(self, table: TableSchema):
+        if table.constraints:
+            constraints = ", ".join(table.constraints)
+        self.query = f"""CREATE TABLE IF NOT EXISTS {table.name} ({','.join([f"{column.name} {column.dtype.value}" for column in table.columns])}, {constraints})"""
         return self
 
     def insert_batch(self, table: str, columns: List[str]):
@@ -72,6 +78,7 @@ class SQLQueryBuilder:
 
 
 if __name__ == "__main__":
+    # Testing query building
     sql_builder = SQLQueryBuilder()
     columns = ["col1", "col2"]
     conditions = [("col1", SQLOperators.EQ, "val1"), ("col2", SQLOperators.LTE, "val2")]
