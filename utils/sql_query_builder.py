@@ -22,7 +22,7 @@ class SQLTypes(Enum):
 
 
 class SQLQueryBuilder:
-    def init(self):
+    def __init__(self):
         self.query = ""
 
     def select(
@@ -53,18 +53,18 @@ class SQLQueryBuilder:
         self.query += f" GROUP BY {','.join(cols)}"
         return self
 
-    def create(self, table: str, columns: List[Union[Tuple[str, SQLTypes], str]]):
-        def _format_column_definition(col: Union[Tuple[str, SQLTypes], str]):
-            if isinstance(col, str):
-                return col
-            name, datatype = col
-            return f"{name} {datatype.value}"
+    def create(self, table: str, col_vs_dtypes: List[Tuple[str, Any]]):
+        def _format_column_definition(col_dtype: Tuple[str, Any]):
+            name, datatype = col_dtype
+            if datatype:
+                return f"{name} {datatype.value}"
+            return name
 
-        self.query = f"""CREATE TABLE IF NOT EXISTS {table} ({','.join([_format_column_definition(col) for col in columns])})"""
+        self.query = f"""CREATE TABLE IF NOT EXISTS {table} ({','.join([_format_column_definition(col_dtype) for col_dtype in col_vs_dtypes])})"""
         return self
 
-    def insert(self, table: str, columns: List[str]):
-        self.query = f"INSERT INTO {table} ({','.join(columns)}) VALUES ({','.join(['?'] * len(columns))})"
+    def insert_batch(self, table: str, columns: List[str]):
+        self.query = f"INSERT INTO {table} ({','.join(columns)}) VALUES ({','.join(['%s'] * len(columns))})"
         return self
 
     def construct_query(self):

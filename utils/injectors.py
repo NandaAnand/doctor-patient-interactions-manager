@@ -2,6 +2,7 @@ import mysql.connector
 
 
 def sql_instance():
+    # @TODO accept config from properties file
     try:
         connection = mysql.connector.connect(
             host="localhost",
