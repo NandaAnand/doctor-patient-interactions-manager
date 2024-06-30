@@ -30,12 +30,12 @@ This project implements a backend application designed to document patient inter
 
 **1. Build the Docker image:**
 
-'''
+```
 bash
 
 docker-compose up —build
 
-'''
+```
 
 **2. Accessing Services:**
 
@@ -49,7 +49,7 @@ Open your web browser and go to http://localhost:8000/docs to view the Swagger d
 
 **4. Load initial script to load datasets**
 
-'''
+```
 bash
 
 docker exec -it <container_id> bash
@@ -58,16 +58,16 @@ cd utils
 
 python load_initial_data.py
 
-'''
+```
 
 **5. Run unittestcases**
 
-'''
+```
 bash
 
 pytest
 
-'''
+```
 
 
 ## Next steps/ Future improvements
