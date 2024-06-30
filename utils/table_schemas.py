@@ -1,10 +1,19 @@
 from typing import List, Optional
 from pydantic import BaseModel
 
-from sql_query_builder import SQLTypes
+from utils.sql_query_builder import SQLTypes
 
 
 class TableSchema(BaseModel):
+    """
+    Represents the schema of a database table.
+
+    Attributes:
+        name (str): The name of the table.
+        columns (List[Column]): List of columns in the table.
+        constraints (Optional[List[str]]): Optional list of constraints for the table.
+    """
+
     class Column(BaseModel):
         name: str
         dtype: Optional[SQLTypes] = None
@@ -46,7 +55,7 @@ InteractionSchema = TableSchema(
         TableSchema.Column(name="metrics", dtype=SQLTypes.VARCHAR),
         TableSchema.Column(name="remarks", dtype=SQLTypes.VARCHAR),
         TableSchema.Column(name="health_status", dtype=SQLTypes.INT),
-        TableSchema.Column(name="qa", dtype=SQLTypes.TEXT),
+        TableSchema.Column(name="qa", dtype=SQLTypes.VARCHAR),
         TableSchema.Column(name="next_steps", dtype=SQLTypes.VARCHAR),
         TableSchema.Column(name="label", dtype=SQLTypes.VARCHAR),
     ],
