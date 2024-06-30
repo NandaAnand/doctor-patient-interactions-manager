@@ -48,7 +48,7 @@ class DataUtils:
         query = (
             self.sql_builder.select(columns=["*"], table=PatientSchema.name)
             .conditions(
-                conditions=[
+                intersections=[
                     (colnames_vs_objs["insurance_no"], SQLOperators.EQ, insurance_no)
                 ]
             )
@@ -81,14 +81,17 @@ class DataUtils:
             List[Interaction]: A list of Interaction objects.
         """
         colnames_vs_objs = {col.name: col for col in InteractionSchema.columns}
-        conditions = [(colnames_vs_objs["insurance_no"], SQLOperators.EQ, insurance_no)]
+        intersections = [
+            (colnames_vs_objs["insurance_no"], SQLOperators.EQ, insurance_no)
+        ]
+        unions = []
         if labels:
             for label in labels.split(","):
-                conditions += [(colnames_vs_objs["label"], SQLOperators.LIKE, label)]
+                unions += [(colnames_vs_objs["label"], SQLOperators.LIKE, label)]
         self.cursor = self.conn.cursor()
         query = (
             self.sql_builder.select(columns=["*"], table=InteractionSchema.name)
-            .conditions(conditions=conditions, logical_op=SQLOperators.OR)
+            .conditions(intersections=intersections, unions=unions)
             .limit(limit)
             .offset(offset)
             .construct_query()

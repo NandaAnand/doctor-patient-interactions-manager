@@ -63,30 +63,39 @@ class SQLQueryBuilder:
         return self
 
     def conditions(
-        self, conditions: List[Tuple], logical_op: Optional[str] = None
+        self, intersections: List[Tuple] = [], unions: List[Tuple] = []
     ) -> Any:
-
         """
-        Add condiotions to query.
+        Add conditions to query.
 
         Args:
-            conditions (List[Tuple]): List of conditions, each tuple of (column, operator, value)
-            logical_op (str): Logical operator to join multiple conditions
-
+            intersections (List[Tuple]): List of conditions to be joined with AND operator, each tuple of (column, operator, value)
+            unions (List[Tuple]): List of conditions to be joined with OR operator, each tuple of (column, operator, value)
         Returns:
             self: The SQLQueryBuilder instance.
         """
-        # iterate over conditions, (col, gte, val), (col, eq, val)
-        conditions_queries = []
-        for col, op, val in conditions:
-            if col.dtype == SQLTypes.INT:
-                conditions_queries.append(f"{self.table}.{col.name} {op.value} {val}")
-            else:
-                conditions_queries.append(f"{self.table}.{col.name} {op.value} '{val}'")
-        if len(conditions_queries) > 1:
-            self.query += f" WHERE {conditions_queries[0] + ' AND ' + f'{logical_op.value}'.join(conditions_queries[1:])}"
+        if len(intersections) == 0 and len(unions) == 0:
+            raise Exception("Please enter atleast one condition!")
+
+        def _format_conditions(conditions: List[Tuple]):
+            # add quote to value if it is a string type
+            res = []
+            for col, op, val in conditions:
+                if col.dtype == SQLTypes.INT:
+                    res.append(f"{self.table}.{col.name} {op.value} {val}")
+                else:
+                    res.append(f"{self.table}.{col.name} {op.value} '{val}'")
+            return res
+
+        self.query += " WHERE "
+        intersections_query = f" {' AND '.join(_format_conditions(intersections))}"
+        unions_query = f" {' OR '.join(_format_conditions(unions))}"
+        if len(intersections) > 0 and len(unions) > 0:
+            self.query += f"{intersections_query} AND {unions_query}"
+        elif len(intersections) > 0:
+            self.query += intersections_query
         else:
-            self.query += f" WHERE {' AND '.join(conditions_queries)}"
+            self.query += unions_query
         return self
 
     def order_by(self, col: str, type: SQLOperators) -> Any:
