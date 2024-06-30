@@ -21,7 +21,7 @@ This project implements a backend application designed to document patient inter
 
 # High level Design:
 
-![High level design](doc_pat_block.png)
+![High level design](images/doc_pat_block.png)
 
 - Tech: FAST API, Dockers, Python’s SQL client for Database handling
 - Microservice architecture with containers for API and Database
