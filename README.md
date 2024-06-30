@@ -58,7 +58,7 @@ python load_initial_data.py
 
 ```
 
-**5. Run unittestcases**
+**5. Run Unit Testcases**
 
 ```bash
 
@@ -70,6 +70,6 @@ pytest
 ## Next steps/ Future improvements
 
 - As part of the database, I have incorporated a custom SQLBuilder framework. The reasoning behind this was the flexibility it would provide for custom data insertions and filtering in the columns. However, the complexity might increase with future features. Switching to a pure ORM model or a schema-less database such as MongoDB might be helpful.
-- The `QA` field in the Interaction captures possible relevant questions asked by the doctor to the patients. With the advent of AI and LLMs, improving this feature by recommending relevant questions based on context using LLMs is envisioned. Also, it could provide povision to generate a summary report for respective patients.
+- The `QA` field in the Interaction captures possible relevant questions asked by the doctor to the patients. With the advent of AI and LLMs, improving this feature by recommending relevant questions based on context using LLMs is envisioned. Also, it could provide provision to generate a summary report for respective patients.
 - Analytics could be drawn from interaction objects to create a holistic profile for patients. Machine Learning techniques such as clustering similar patients might aid doctors during diagnosis.
 - `@TODO` comments are included in the script where improvements are needed.
